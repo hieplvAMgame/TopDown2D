@@ -18,12 +18,12 @@ public class ObjectPooling : PersistentSingleton<ObjectPooling>
             if (!pools.ContainsKey(x))
             {
                 pools.Add(x, new List<GameObject>());
-                for(int i = 0; i < sizePool; i++)
-                {
-                    GameObject o = Instantiate(x,transform);
-                    o.gameObject.SetActive(false);
-                    pools[x].Add(o);
-                }
+            }
+            for (int i = 0; i < sizePool; i++)
+            {
+                GameObject o = Instantiate(x, transform);
+                o.gameObject.SetActive(false);
+                pools[x].Add(o);
             }
         }
     }

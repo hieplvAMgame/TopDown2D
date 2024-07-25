@@ -36,6 +36,7 @@ public class Gun: MonoBehaviour
         Debug.Log("SHOOT!");
         currentBullet--;
         if (currentBullet <= 0 && !isReloading) Reload();
+        GameUI.Instance.ShowVisualFireRate(fireRate);
         DOVirtual.DelayedCall(fireRate, () =>
         {
             onComplete?.Invoke();
@@ -46,10 +47,12 @@ public class Gun: MonoBehaviour
     {
         Debug.Log("RELOAD!");
         isReloading = true;
+        GameUI.Instance.ShowPanelReloading(true);
         DOVirtual.DelayedCall(timeLoading, () =>
         {
             currentBullet = totalBullet;
             isReloading = false;
+            GameUI.Instance.ShowPanelReloading(false);
         });
     }
     IEnumerator IShoot(Action onComplete = null)
@@ -59,7 +62,15 @@ public class Gun: MonoBehaviour
     }
     public float GetSpeed() => speed;
 }
-
+[System.Serializable]
+public class GunData
+{
+    public int totalBullet;
+    public float timeLoading;
+    public float fireRate;
+    public int damage;
+    public float speed;
+}
 public enum Type_Gun
 {
     Pistol,

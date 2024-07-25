@@ -46,6 +46,7 @@ public class PlayerPhysics : MonoBehaviour
                 Debug.LogError("Hurt");
                 // Vfx
                 // Sfx
+                // Shake Camera
                 // ...
             }, () =>
             {
