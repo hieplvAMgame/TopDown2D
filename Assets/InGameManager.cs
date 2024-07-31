@@ -1,22 +1,45 @@
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 public class InGameManager : MonoBehaviour
 {
+    [SerializeField] CameraFollower cameraFollower;
     public static InGameManager Instance;
+
+    [SerializeField] List<LevelData> datas = new List<LevelData>();
+
 
     [SerializeField] public PlayerPhysics player;
 
-    [SerializeField] List<EnemyController> enemies = new List<EnemyController>();
     TimerExtension timer = new TimerExtension();
     bool isPlayerAlive => player.hp.IsAlive;
 
-
     [SerializeField] TMP_Text txtTimer;
-    public int time;
+
+    LevelData currentLevelData;
+
+
+    int totalEnemy;
+    [ShowInInspector]
+    public int TotalEnemy
+    {
+        get => currentNumEnemy;
+        set
+        {
+            if (value <= 0)
+            {
+                currentNumEnemy = 0;
+                if (timer.GetTime() > 0) GameWin();
+            }
+            else
+                currentNumEnemy = value;
+        }
+    }
     public void UpdateUI()
     {
         int _time = timer.GetTime();
@@ -28,19 +51,43 @@ public class InGameManager : MonoBehaviour
     {
 
     }
+    public void GameWin()
+    {
+        Debug.Log("Game Win");
+    }
     public void StartGame()
     {
         timer.StartCountDown();
     }
     bool isGameWin = false;
+    LevelManager levelManager;
+    int currentNumEnemy;
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        txtTimer.text = time.ToString();
+        GameConfig.GetDataGun();
+        //currentLevelData = datas[GameConfig.CurrenLevel];
+        //totalEnemy = currentLevelData.totalEnemy;
+        //txtTimer.text = currentLevelData.timePlay.ToString();
         // Prepare: Data 1p30s
-        timer.InitTimer(this, time, UpdateUI, GameOver);
+        timer.InitTimer(this, /*currentLevelData.timePlay*/600, UpdateUI, GameOver);
+        levelManager = Instantiate(Resources.Load("Level0"), transform).GetComponent<LevelManager>();
+        levelManager.SetCameraBound(ref cameraFollower);
+        currentNumEnemy = levelManager.GetTotalEnemies();
         StartGame();
     }
+     int indexGun;
+    [Button("Unlock new gun")]
+    public void UnLockGun() => GameConfig.UnlockNewGun(indexGun);
+
+    private void Update()
+    {
+    }
+    //public void OnKillenemy()
+    //{
+    //    currentNumEnemy--;
+    //    if (currentNumEnemy <= 0) GameWin();
+    //}
 }
 
 public class TimerExtension
@@ -91,4 +138,5 @@ public class TimerExtension
         timer = 0;
     }
     Coroutine CoCountdown = null;
+
 }

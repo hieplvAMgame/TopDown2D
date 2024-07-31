@@ -8,7 +8,7 @@ public class Gun: MonoBehaviour
     private int totalBullet;
     private float timeLoading;
     private float fireRate;
-    //public float angle = 0;
+    public float angle = 0;
     private int damage;
     private float speed;
 
@@ -31,10 +31,17 @@ public class Gun: MonoBehaviour
     }
     bool isReloading = false;
     Coroutine CoShoot = null;
+    [SerializeField] GameObject bulletPrefab;
+    Bullet blClone;
     public virtual void Shoot(Action onComplete = null)
     {
         Debug.Log("SHOOT!");
         currentBullet--;
+        blClone = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity).GetComponent<Bullet>();
+        angleShoot = CanculateAngleRan();
+        blClone.Setup(GetSpeed(), shootingPoint.transform.up);      // set up angle 
+        ShowShootVfx();
+        SoundManager.instance.PlayShootClip(0);
         if (currentBullet <= 0 && !isReloading) Reload();
         GameUI.Instance.ShowVisualFireRate(fireRate);
         DOVirtual.DelayedCall(fireRate, () =>
@@ -43,11 +50,17 @@ public class Gun: MonoBehaviour
             CoShoot = null;
         });
     }
+    public float angleShoot;
+    float CanculateAngleRan()
+    {
+        return UnityEngine.Random.Range(-angle / 2, angle / 2);
+    }
     public virtual void Reload()
     {
         Debug.Log("RELOAD!");
         isReloading = true;
         GameUI.Instance.ShowPanelReloading(true);
+        SoundManager.instance.PlayReloadClip();
         DOVirtual.DelayedCall(timeLoading, () =>
         {
             currentBullet = totalBullet;
@@ -61,6 +74,14 @@ public class Gun: MonoBehaviour
         yield return new WaitForSeconds(fireRate);
     }
     public float GetSpeed() => speed;
+
+    // vFX
+    [SerializeField] ParticleSystem shootVfx;
+    public void ShowShootVfx()
+    {
+        shootVfx.Play();
+    }
+
 }
 [System.Serializable]
 public class GunData

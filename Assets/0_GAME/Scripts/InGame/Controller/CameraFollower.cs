@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CameraFollower : MonoBehaviour
@@ -9,6 +10,11 @@ public class CameraFollower : MonoBehaviour
     Vector3 offset;
 
     private void Awake()
+    {
+        //transform.position = new Vector3(target.position.x, target.position.y, transform.position.z);
+        //offset = target.position - transform.position;
+    }
+    private void Start()
     {
         transform.position = new Vector3(target.position.x, target.position.y, transform.position.z);
         offset = target.position - transform.position;
@@ -25,4 +31,11 @@ public class CameraFollower : MonoBehaviour
     // Clamp Pos
 
     [SerializeField] float minX, maxX, minY, maxY;
+    public void SetBound(float minx, float maxx, float miny, float maxy)
+    {
+        minX = minx;
+        maxX = maxx;
+        minY = miny;
+        maxY = maxy;
+    }
 }

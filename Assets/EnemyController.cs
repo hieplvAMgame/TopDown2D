@@ -4,23 +4,49 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public float speed;
+    [SerializeField] Transform target;// transform of player
+    [SerializeField] Navigate nav;
 
-    Rigidbody2D rb;
-    [SerializeField] Transform target;
+    HpSystem hp = new HpSystem();
+    [SerializeField] HpUI hpUI;
+    public int maxHP;
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        hp.Init(maxHP);
+        hpUI.SetUp(maxHP);
     }
-    private void Start()
+
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        target = InGameManager.Instance.player.transform;
+        if (collision.CompareTag(GAME_TAG.Player))
+        {
+            Debug.Log(gameObject.name + $"Set Target {collision.gameObject.name}");
+            nav.target = collision.gameObject.transform;
+        }
     }
-    private void Update()
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        Vector3 dir = target.position - transform.position;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90;
-        transform.localEulerAngles = Vector3.forward * angle;
-        rb.velocity = dir.normalized * speed;
+        if (collision.CompareTag(GAME_TAG.Player))
+        {
+            nav.target = null;
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag(GAME_TAG.Bullet))
+        {
+            collision.gameObject.SetActive(false);
+            hp.MinusHp(1,
+                () =>
+                {
+                    hpUI.SetValue(hp.GetCurrentHp());
+                },
+                () =>
+                {
+                    // TODO: show vfx;
+                    InGameManager.Instance.TotalEnemy--;
+                    gameObject.SetActive(false);
+                });
+        }
     }
 }
