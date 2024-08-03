@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-public class Gun: MonoBehaviour
+public class Gun : MonoBehaviour
 {
     private int totalBullet;
     private float timeLoading;
@@ -37,11 +37,8 @@ public class Gun: MonoBehaviour
     {
         Debug.Log("SHOOT!");
         currentBullet--;
-        blClone = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity).GetComponent<Bullet>();
-        angleShoot = CanculateAngleRan();
-        blClone.Setup(GetSpeed(), shootingPoint.transform.up);      // set up angle 
-        ShowShootVfx();
-        SoundManager.instance.PlayShootClip(0);
+        //blClone = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity).GetComponent<Bullet>();
+        SpawnBullet();
         if (currentBullet <= 0 && !isReloading) Reload();
         GameUI.Instance.ShowVisualFireRate(fireRate);
         DOVirtual.DelayedCall(fireRate, () =>
@@ -49,6 +46,17 @@ public class Gun: MonoBehaviour
             onComplete?.Invoke();
             CoShoot = null;
         });
+    }
+    void SpawnBullet()
+    {
+        blClone = ObjectPooling.Instance.GetObjectFromPool(bulletPrefab).GetComponent<Bullet>();
+        blClone.transform.position = shootingPoint.position;
+        blClone.transform.rotation = Quaternion.identity;
+        blClone.gameObject.SetActive(true);
+        angleShoot = CanculateAngleRan();
+        blClone.Setup(GetSpeed(), shootingPoint.transform.up);    // set up angle 
+        ShowShootVfx();
+        SoundManager.Instance.PlayShootClip(0);
     }
     public float angleShoot;
     float CanculateAngleRan()
@@ -60,7 +68,7 @@ public class Gun: MonoBehaviour
         Debug.Log("RELOAD!");
         isReloading = true;
         GameUI.Instance.ShowPanelReloading(true);
-        SoundManager.instance.PlayReloadClip();
+        SoundManager.Instance.PlayReloadClip();
         DOVirtual.DelayedCall(timeLoading, () =>
         {
             currentBullet = totalBullet;

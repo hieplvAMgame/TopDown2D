@@ -7,7 +7,7 @@ public class PersistentSingleton<T> : MonoBehaviour where T: Component
     private static T _singleton;
     public static T Instance => _singleton;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (_singleton == null)
         {

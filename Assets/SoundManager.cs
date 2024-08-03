@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : PersistentSingleton<SoundManager>
 {
-    public static SoundManager instance;
     [SerializeField] AudioClip shootClip0;
     [SerializeField] AudioClip shootClip1;
     [SerializeField] AudioClip shootClip2;
@@ -16,9 +15,9 @@ public class SoundManager : MonoBehaviour
 
     [SerializeField] AudioSource[] channels;
     int curChannel = 0;
-    private void Awake()
+    protected override void Awake()
     {
-        if (instance == null) instance = this;
+        base.Awake();
         shootClips = new AudioClip[] { shootClip0, shootClip1, shootClip2, shootClip3, shootClip4 };
     }
 

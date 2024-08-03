@@ -7,7 +7,7 @@ using UnityEngine;
 public class HpSystem
 {
     public int maxHP;
-    public int currentHp;
+    int currentHp;
     public bool IsAlive
     {
         get
@@ -36,7 +36,7 @@ public class HpSystem
         onAddHp?.Invoke();
         return this;
     }
-    public HpSystem MinusHp(int value,Action onMinusHp = null, Action onDie = null)
+    public HpSystem MinusHp(int value, Action onMinusHp = null, Action onDie = null)
     {
         currentHp -= value;
         onMinusHp?.Invoke();

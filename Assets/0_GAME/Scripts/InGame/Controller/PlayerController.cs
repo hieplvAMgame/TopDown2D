@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!InGameManager.Instance.isGameStart) return;
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
 
@@ -52,6 +53,11 @@ public class PlayerController : MonoBehaviour
     public bool IsShooting = false;
     private void FixedUpdate()
     {
+        if (!InGameManager.Instance.isGameStart)
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
         if (playerPhysics.hp.IsAlive)
             rb.velocity = _dirMove * moveSpeed;
         else

@@ -18,6 +18,7 @@ public class PlayerShootManager : MonoBehaviour
     }
     private void Update()
     {
+        if (!InGameManager.Instance.isGameStart) return;
         if (!inShooting)
             Shoot();
     }

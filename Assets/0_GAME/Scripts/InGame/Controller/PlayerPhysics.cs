@@ -6,10 +6,12 @@ using UnityEngine;
 public class PlayerPhysics : MonoBehaviour
 {
     public HpSystem hp;
+    public HpUI hpUi;
     private void Awake()
     {
         hp = new HpSystem();
         hp.Init(5);
+        hpUi.SetUp(hp.maxHP);
     }
     [Button("Revive")]
     public void Revive()
@@ -44,6 +46,7 @@ public class PlayerPhysics : MonoBehaviour
             hp.MinusHp(1, () =>
             {
                 Debug.LogError("Hurt");
+                hpUi.SetValue(hp.GetCurrentHp());
                 // Vfx
                 // Sfx
                 // Shake Camera
@@ -51,6 +54,7 @@ public class PlayerPhysics : MonoBehaviour
             }, () =>
             {
                 Debug.LogError("DIE!");
+                InGameManager.Instance.GameOver();
             });
         }
     }

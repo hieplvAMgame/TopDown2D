@@ -6,10 +6,9 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-public class InGameManager : MonoBehaviour
+public class InGameManager : PersistentSingleton<InGameManager>, IStateGame
 {
     [SerializeField] CameraFollower cameraFollower;
-    public static InGameManager Instance;
 
     [SerializeField] List<LevelData> datas = new List<LevelData>();
 
@@ -23,8 +22,7 @@ public class InGameManager : MonoBehaviour
 
     LevelData currentLevelData;
 
-
-    int totalEnemy;
+    public bool isGameStart = false;
     [ShowInInspector]
     public int TotalEnemy
     {
@@ -49,39 +47,65 @@ public class InGameManager : MonoBehaviour
     }
     public void GameOver()
     {
-
+        isGameStart = false;
+        timer.StopCountDown();
+        Debug.Log("GameOver!");
     }
     public void GameWin()
     {
+        isGameStart = false;
         Debug.Log("Game Win");
+        GameConfig.ClearedLevel++;
+        GameConfig.CurrenLevel++;
+        // Show Game Win Popup
     }
-    public void StartGame()
+    public void GameStart()
     {
+        isGameStart = true;
         timer.StartCountDown();
     }
     bool isGameWin = false;
     LevelManager levelManager;
     int currentNumEnemy;
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance == null) Instance = this;
+        base.Awake();
         GameConfig.GetDataGun();
         //currentLevelData = datas[GameConfig.CurrenLevel];
         //totalEnemy = currentLevelData.totalEnemy;
         //txtTimer.text = currentLevelData.timePlay.ToString();
         // Prepare: Data 1p30s
-        timer.InitTimer(this, /*currentLevelData.timePlay*/600, UpdateUI, GameOver);
-        levelManager = Instantiate(Resources.Load("Level0"), transform).GetComponent<LevelManager>();
-        levelManager.SetCameraBound(ref cameraFollower);
-        currentNumEnemy = levelManager.GetTotalEnemies();
-        StartGame();
+        GamePrepare();
     }
      int indexGun;
     [Button("Unlock new gun")]
     public void UnLockGun() => GameConfig.UnlockNewGun(indexGun);
 
+
     private void Update()
     {
+    }
+
+
+    public void GamePause()
+    {
+        Time.timeScale = 0;
+    }
+
+    public void GamePrepare()
+    {
+        isGameStart = false;
+        GameUIManager.Instance.ShowButtonStart(true);
+        // Spawn Map
+        timer.InitTimer(this, /*currentLevelData.timePlay*/180, UpdateUI, GameOver);
+        txtTimer.text = "";
+        levelManager = Instantiate(Resources.Load($"Level{GameConfig.CurrenLevel}"), transform).GetComponent<LevelManager>();
+        levelManager.SetCameraBound(ref cameraFollower);
+        currentNumEnemy = levelManager.GetTotalEnemies();
+    }
+    public void GameResume()
+    {
+        Time.timeScale = 1;
     }
     //public void OnKillenemy()
     //{
@@ -139,4 +163,13 @@ public class TimerExtension
     }
     Coroutine CoCountdown = null;
 
+}
+public interface IStateGame
+{
+    void GameWin();
+    void GameOver();
+    void GamePause();
+    void GamePrepare();
+    void GameResume();
+    void GameStart();
 }

@@ -7,8 +7,9 @@ public class ObjectPooling : PersistentSingleton<ObjectPooling>
     public int sizePool;
     [SerializeField] List<GameObject> objectsToPool = new List<GameObject>();
     Dictionary<GameObject,List<GameObject>> pools = new Dictionary<GameObject,List<GameObject>>();
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         CreatePool();
     }
     public void CreatePool()

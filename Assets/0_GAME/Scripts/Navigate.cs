@@ -19,6 +19,11 @@ public class Navigate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!InGameManager.Instance.isGameStart)
+        {
+            target = null;
+            return;
+        }
         //if (Input.GetMouseButtonUp(0))
         //{
         //    var target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
