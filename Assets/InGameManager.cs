@@ -53,10 +53,12 @@ public class InGameManager : PersistentSingleton<InGameManager>, IStateGame
     }
     public void GameWin()
     {
+        timer.StopCountDown();
         isGameStart = false;
         Debug.Log("Game Win");
         GameConfig.ClearedLevel++;
         GameConfig.CurrenLevel++;
+        GameUIManager.Instance.ingameUI.ShowGameWinPopup();
         // Show Game Win Popup
     }
     public void GameStart()
@@ -71,13 +73,14 @@ public class InGameManager : PersistentSingleton<InGameManager>, IStateGame
     {
         base.Awake();
         GameConfig.GetDataGun();
+        timer.InitTimer(this, /*currentLevelData.timePlay*/180, UpdateUI, GameOver);
         //currentLevelData = datas[GameConfig.CurrenLevel];
         //totalEnemy = currentLevelData.totalEnemy;
         //txtTimer.text = currentLevelData.timePlay.ToString();
         // Prepare: Data 1p30s
         GamePrepare();
     }
-     int indexGun;
+    int indexGun;
     [Button("Unlock new gun")]
     public void UnLockGun() => GameConfig.UnlockNewGun(indexGun);
 
@@ -96,9 +99,15 @@ public class InGameManager : PersistentSingleton<InGameManager>, IStateGame
     {
         isGameStart = false;
         GameUIManager.Instance.ShowButtonStart(true);
+        timer.ResetCountDown();
         // Spawn Map
-        timer.InitTimer(this, /*currentLevelData.timePlay*/180, UpdateUI, GameOver);
         txtTimer.text = "";
+        LoadNewLevel();
+    }
+    public void LoadNewLevel()
+    {
+        if (levelManager)
+            DestroyImmediate(levelManager.gameObject);
         levelManager = Instantiate(Resources.Load($"Level{GameConfig.CurrenLevel}"), transform).GetComponent<LevelManager>();
         levelManager.SetCameraBound(ref cameraFollower);
         currentNumEnemy = levelManager.GetTotalEnemies();
@@ -112,6 +121,8 @@ public class InGameManager : PersistentSingleton<InGameManager>, IStateGame
     //    currentNumEnemy--;
     //    if (currentNumEnemy <= 0) GameWin();
     //}
+    public int GetNumberEnemyKilled() => levelManager.GetTotalEnemies() - currentNumEnemy;
+    public int GetTimePlay() => 180 - timer.GetTime();
 }
 
 public class TimerExtension

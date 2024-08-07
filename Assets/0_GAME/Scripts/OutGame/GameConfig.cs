@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
+
 public static class GameConfig
 {
+    const int MaxLevel = 3;
     static List<bool> listGuns; // -> string
     public const string DATA_GUN = "Data_Gun";
     public static void GetDataGun()
@@ -38,7 +41,7 @@ public static class GameConfig
     public static int CurrenLevel
     {
         get => PlayerPrefs.GetInt("CurrentLevel", 0);
-        set => PlayerPrefs.SetInt("CurrentLevel", value);
+        set => PlayerPrefs.SetInt("CurrentLevel", Mathf.Min(value, MaxLevel));
     }
 
     public static int ClearedLevel
@@ -53,4 +56,13 @@ public struct GAME_TAG
     public const string Player = "Player";
     public const string Bullet = "Bullet";
     public const string Wall = "Wall";
+}
+public static class ExtensionMethod
+{
+    public static string ConvertSecToMin(this int sec)
+    {
+        int m = sec / 60;
+        int s = sec % 60;
+        return string.Format($"{m:00}:{s:00}");
+    }
 }

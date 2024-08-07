@@ -13,7 +13,7 @@ public class PlayerShootManager : MonoBehaviour
     {
         currentGun = GameObject.Instantiate(Resources.Load<GameObject>("0"), holderGun).GetComponent<Gun>();
         controller = GetComponent<PlayerController>();
-        currentGun.Setup(5, 2, .5f, 5, 10, this);
+        currentGun.Setup(10, 1, .2f, 5, 10, this);
         SetFov();
     }
     private void Update()

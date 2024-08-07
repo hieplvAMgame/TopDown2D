@@ -7,10 +7,11 @@ using UnityEngine.UI;
 public class GameUIManager : PersistentSingleton<GameUIManager>
 {
     [Header("Ingame UI")]
-    [SerializeField] GameObject ingameUI;
+    [SerializeField] public InGameUI ingameUI;
     [SerializeField] Button btnStart;
 
     [SerializeField] GameObject outGameUI;
+    [SerializeField] public LoadingPanel loadingPanel;
 
     protected override void Awake()
     {
@@ -19,7 +20,7 @@ public class GameUIManager : PersistentSingleton<GameUIManager>
     }
     public void ShowUI(bool isIngame)
     {
-        ingameUI.SetActive(isIngame);
+        ingameUI.gameObject.SetActive(isIngame);
         outGameUI.SetActive(!isIngame);
     }
     private void AddListenerButton()

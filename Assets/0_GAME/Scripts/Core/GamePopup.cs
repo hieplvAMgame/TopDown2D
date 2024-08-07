@@ -18,8 +18,12 @@ public class GamePopup<T> : MonoBehaviour where T : GamePopup<T>
     {
         AnimateOpen();
     }
+    protected virtual void OnAnimateComplete()
+    {
+
+    }
     [Button("Open")]
-    void AnimateOpen(Action onComplete = null)
+    protected void AnimateOpen(Action onComplete = null)
     {
         switch (typeMove)
         {
@@ -29,6 +33,7 @@ public class GamePopup<T> : MonoBehaviour where T : GamePopup<T>
                     .OnComplete(() =>
                     {
                         transform.localPosition = Vector3.zero;
+                        OnAnimateComplete();
                         onComplete?.Invoke();
                     }).SetUpdate(false);
                 break;
@@ -38,6 +43,7 @@ public class GamePopup<T> : MonoBehaviour where T : GamePopup<T>
                     .OnComplete(() =>
                     {
                         transform.localPosition = Vector3.zero;
+                        OnAnimateComplete();
                         onComplete?.Invoke();
                     }).SetUpdate(false);
                 break;
@@ -47,6 +53,7 @@ public class GamePopup<T> : MonoBehaviour where T : GamePopup<T>
                     .OnComplete(() =>
                     {
                         transform.localPosition = Vector3.zero;
+                        OnAnimateComplete();
                         onComplete?.Invoke();
                     }).SetUpdate(false);
                 break;
@@ -56,6 +63,7 @@ public class GamePopup<T> : MonoBehaviour where T : GamePopup<T>
                     .OnComplete(() =>
                     {
                         transform.localPosition = Vector3.zero;
+                        OnAnimateComplete();
                         onComplete?.Invoke();
                     }).SetUpdate(false);
                 break;
@@ -65,15 +73,15 @@ public class GamePopup<T> : MonoBehaviour where T : GamePopup<T>
                     .OnComplete(() =>
                     {
                         transform.localScale = Vector3.one;
+                        OnAnimateComplete();
                         onComplete?.Invoke();
                     }).SetUpdate(false);
                 break;
-
                 isShow = true;
         }
     }
     [Button("Close")]
-    void AnimateClose(Action onComplete = null)
+    protected void AnimateClose(Action onComplete = null)
     {
         switch (typeMove)
         {
@@ -118,6 +126,11 @@ public class GamePopup<T> : MonoBehaviour where T : GamePopup<T>
                     }).SetUpdate(false);
                 break;
         }
+    }
+
+    private void OnDisable()
+    {
+        AnimateClose();
     }
 }
 
